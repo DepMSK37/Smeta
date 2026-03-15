@@ -6,20 +6,13 @@ import { parsePdfWithGemini } from '../services/gemini';
 import { calculateMaterials } from '../services/calculator';
 import { formatMaterialList, formatFinancialStatement } from '../utils/formatter';
 import * as https from 'https';
-import { SocksProxyAgent } from 'socks-proxy-agent';
 
-// V2Ray/Hiddify SOCKS5 прокси на порту 10808
-const proxyAgent = new SocksProxyAgent('socks5://127.0.0.1:10808');
+export const bot = new Telegraf(env.TELEGRAM_BOT_TOKEN);
 
-export const bot = new Telegraf(env.TELEGRAM_BOT_TOKEN, {
-  telegram: { agent: proxyAgent as any },
-});
-
-// Скачиваем файл тоже через прокси
 function downloadFile(url: string): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const chunks: Buffer[] = [];
-    const req = https.get(url, { agent: proxyAgent as any }, (res) => {
+    const req = https.get(url, (res) => {
       if (res.statusCode !== 200) {
         reject(new Error(`HTTP ${res.statusCode}: ${res.statusMessage}`));
         return;
